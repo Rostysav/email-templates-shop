@@ -1,0 +1,168 @@
+{% comment %}
+  Ash packing slip.
+  Paste this whole file into Shopify admin:
+  Settings → Shipping and delivery → Documents → Packing slip template.
+  Preview the template, then save. Print one real order before you rely on it.
+
+  The letter A, the word ASH, and the line "Goods for the house" are the brand.
+  Shop name, address, order, and items come from Shopify.
+  Prices are not on this slip. Shopify does not pass them to a packing slip.
+{% endcomment %}
+<style>
+  .slip { color: #1A1814; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; line-height: 1.45; }
+  .slip * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slip table { width: 100%; border-collapse: collapse; }
+  .slip td { vertical-align: top; }
+  .brand { }
+  .mark {
+    width: 42px; height: 42px; border: 1px solid #1A1814;
+    font-family: Georgia, "Times New Roman", serif; font-size: 24px; line-height: 40px;
+    text-align: center; color: #1A1814;
+  }
+  .brand-table td { vertical-align: middle; }
+  .word {
+    font-family: Georgia, "Times New Roman", serif; font-size: 15px; letter-spacing: 0.34em;
+    padding-left: 12px; line-height: 1;
+  }
+  .tagline { padding-left: 12px; padding-top: 6px; color: #6E675C; font-size: 12px; letter-spacing: 0.02em; }
+  .order { text-align: right; }
+  .label {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6E675C; font-weight: 650;
+  }
+  .num { font-family: Georgia, "Times New Roman", serif; font-size: 32px; line-height: 1.1; padding-top: 4px; }
+  .date { color: #6E675C; padding-top: 4px; }
+  .rule { border: 0; border-top: 1px solid #1A1814; margin: 22px 0 0; }
+  .who td { width: 50%; padding-top: 22px; padding-right: 24px; }
+  .who-name { font-family: Georgia, "Times New Roman", serif; font-size: 20px; line-height: 1.3; padding: 6px 0 4px; }
+  .who div { margin: 0; }
+  .meta { color: #6E675C; padding-top: 4px; }
+  .items { margin-top: 28px; }
+  .items th {
+    text-align: left; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6E675C; font-weight: 650; padding: 0 0 8px; border-bottom: 1px solid #1A1814;
+  }
+  .items td { padding: 14px 12px 14px 0; border-bottom: 1px solid #D9D1C3; }
+  .qty { width: 88px; font-family: Georgia, "Times New Roman", serif; font-size: 22px; color: #3E4A3A; line-height: 1.2; }
+  .of { font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; color: #6E675C; }
+  .item-table td { vertical-align: middle; }
+  .thumb { width: 36px; padding-right: 12px; }
+  .thumb img { width: 36px; height: 36px; object-fit: cover; display: block; }
+  .title { font-family: Georgia, "Times New Roman", serif; font-size: 16px; }
+  .note { margin-top: 28px; }
+  .note p { font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.4; margin: 8px 0 0; }
+  .partial { margin-top: 18px; color: #6E675C; }
+  .foot { margin-top: 36px; border-top: 1px solid #D9D1C3; padding-top: 12px; color: #6E675C; font-size: 12px; }
+</style>
+<div class="slip">
+  <table>
+    <tr>
+      <td>
+        <table class="brand-table">
+          <tr>
+            <td style="width:42px;">
+              <div class="mark">A</div>
+            </td>
+            <td>
+              <div class="word">ASH</div>
+              <div class="tagline">Goods for the house</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+      <td class="order">
+        <div class="label">Order</div>
+        <div class="num">{{ order.name }}</div>
+        <div class="date">{{ order.created_at | date: "%B %d, %Y" }}</div>
+      </td>
+    </tr>
+  </table>
+
+  <hr class="rule">
+
+  <table class="who">
+    <tr>
+      <td>
+        <div class="label">Ship to</div>
+        {% if shipping_address != blank %}
+          <div class="who-name">{{ shipping_address.name }}</div>
+          {% if shipping_address.company != blank %}<div>{{ shipping_address.company }}</div>{% endif %}
+          {% if shipping_address.address1 != blank %}<div>{{ shipping_address.address1 }}</div>{% endif %}
+          {% if shipping_address.address2 != blank %}<div>{{ shipping_address.address2 }}</div>{% endif %}
+          <div>{{ shipping_address.city }}{% if shipping_address.province_code != blank %}, {{ shipping_address.province_code }}{% endif %} {{ shipping_address.zip }}</div>
+          {% if shipping_address.country != blank %}<div>{{ shipping_address.country }}</div>{% endif %}
+          {% if shipping_address.phone != blank %}<div class="meta">{{ shipping_address.phone }}</div>{% endif %}
+        {% endif %}
+      </td>
+      <td>
+        <div class="label">From</div>
+        <div class="who-name">{{ shop.name }}</div>
+        {% if shop_address != blank %}
+          {% if shop_address.address1 != blank %}<div>{{ shop_address.address1 }}</div>{% endif %}
+          {% if shop_address.address2 != blank %}<div>{{ shop_address.address2 }}</div>{% endif %}
+          <div>{{ shop_address.city }}{% if shop_address.province_code != blank %}, {{ shop_address.province_code }}{% endif %} {{ shop_address.zip }}</div>
+          {% if shop_address.country != blank %}<div>{{ shop_address.country }}</div>{% endif %}
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+
+  <table class="items">
+    <thead>
+      <tr>
+        <th>Qty</th>
+        <th>Item</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for line_item in line_items_in_shipment %}
+        <tr>
+          <td class="qty">
+            {% if line_item.shipping_quantity != line_item.quantity %}
+              {{ line_item.shipping_quantity }}<span class="of"> of {{ line_item.quantity }}</span>
+            {% else %}
+              {{ line_item.shipping_quantity }}
+            {% endif %}
+          </td>
+          <td>
+            <table class="item-table">
+              <tr>
+                {% if line_item.image != blank %}
+                  <td class="thumb">{{ line_item.image | img_url: '64x64' | img_tag }}</td>
+                {% endif %}
+                <td>
+                  <div class="title">{{ line_item.title }}</div>
+                  {% if line_item.sku != blank %}<div class="meta">{{ line_item.sku }}</div>{% endif %}
+                  {% for property in line_item.properties %}
+                    {% if property.last != blank %}
+                      <div class="meta">{{ property.first }}: {{ property.last }}</div>
+                    {% endif %}
+                  {% endfor %}
+                  {% for group in line_item.groups %}
+                    <div class="meta">{% if group.deliverable? %}Add-on for {{ group.title }}{% else %}Part of {{ group.title }}{% endif %}</div>
+                  {% endfor %}
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if order.note != blank %}
+    <div class="note">
+      <div class="label">A note</div>
+      <p>{{ order.note }}</p>
+    </div>
+  {% endif %}
+
+  {% unless includes_all_line_items_in_order %}
+    <p class="partial">Other items from this order are not in this box.</p>
+  {% endunless %}
+
+  <div class="foot">
+    {% if customer.first_name != blank %}Packed for {{ customer.first_name }}<br>{% endif %}
+    {{ shop.domain }}{% if shop.email != blank %} · {{ shop.email }}{% endif %}
+  </div>
+</div>

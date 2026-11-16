@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Daybook">
+<meta name="theme-color" content="#C4B49A">
+<title>Daybook</title>
+<style>
+  :root {
+    --desk: #C4B49A;
+    --page: #F6F0E4;
+    --ink: #2A241C;
+    --muted: #8A7D6D;
+    --rule: #E4D8C6;
+    --accent: #8E3B2E;
+    --accent-ink: #F6F0E4;
+    --safe-t: env(safe-area-inset-top);
+    --safe-b: env(safe-area-inset-bottom);
+  }
+  [data-theme="ink"] {
+    --desk: #0B0D0B;
+    --page: #1A1E1B;
+    --ink: #F3EEE4;
+    --muted: #9A9388;
+    --rule: #2C332E;
+    --accent: #D6E35C;
+    --accent-ink: #141714;
+    color-scheme: dark;
+  }
+  [data-theme="tide"] {
+    --desk: #9EB4B8;
+    --page: #F3F7F7;
+    --ink: #163038;
+    --muted: #6D8488;
+    --rule: #D5E2E4;
+    --accent: #1C4E5A;
+    --accent-ink: #F3F7F7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: var(--desk);
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { background: none; border: 0; padding: 0; cursor: pointer; }
+  .desk {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: calc(22px + var(--safe-t)) 22px calc(22px + var(--safe-b));
+    gap: 18px;
+  }
+  .book { position: relative; width: min(1080px, 100%); }
+  .spread {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: min(740px, calc(100dvh - 64px));
+    background: var(--page);
+    box-shadow: 0 28px 70px rgba(40, 28, 16, 0.28);
+    position: relative;
+  }
+  .spread::before {
+    content: "";
+    position: absolute;
+    left: 50%; top: 0; bottom: 0;
+    width: 36px;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, rgba(0,0,0,.05), rgba(0,0,0,.16) 42%, rgba(255,255,255,.28) 50%, rgba(0,0,0,.2) 58%, rgba(0,0,0,.04));
+    pointer-events: none;
+    z-index: 2;
+  }
+  .leaf { position: relative; padding: 28px 34px 22px; min-height: 100%; display: flex; flex-direction: column; }
+  .leaf.left { padding-right: 42px; }
+  .leaf.right { padding-left: 42px; }
+  .kicker {
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 0;
+  }
+  .leaf h2 { font-weight: normal; font-size: 42px; line-height: 0.95; margin: 8px 0 0; }
+  .leaf h3 { font-weight: normal; font-size: 34px; line-height: 1; margin: 0; }
+  .quiet { margin: 6px 0 0; color: var(--muted); font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; }
+
+  .ribbons { position: absolute; left: calc(100% - 2px); top: 42px; display: flex; flex-direction: column; gap: 8px; z-index: 3; }
+  .ribbon {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    padding: 14px 8px;
+    min-height: 44px;
+  }
+  .ribbon[aria-current="page"] { padding-top: 22px; }
+
+  .month-nav, .turn { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .turn button, .month-nav button, .ghost {
+    min-width: 44px; min-height: 44px;
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .weekdays, .days { display: grid; grid-template-columns: repeat(7, 1fr); }
+  .weekdays span { text-align: center; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); padding: 14px 0 6px; }
+  .daycell {
+    height: 42px;
+    font-size: 16px;
+    position: relative;
+    color: var(--ink);
+  }
+  .daycell.out { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+  .daycell.on { background: var(--accent); color: var(--accent-ink); border-radius: 50%; }
+  .daycell.today:not(.on) { box-shadow: inset 0 0 0 1px var(--accent); border-radius: 50%; }
+  .daycell .dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); left: 50%; bottom: 4px; transform: translateX(-50%); }
+  .daycell.on .dot { background: var(--accent-ink); }
+
+  .months { display: grid; grid-template-columns: 1fr; gap: 2px; margin-top: 18px; }
+  .months button { text-align: left; font-size: 26px; line-height: 1.35; padding: 2px 0; }
+  .months em { font-style: normal; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; color: var(--muted); margin-left: 10px; }
+
+  .week-list { margin-top: 16px; display: flex; flex-direction: column; }
+  .week-list button { display: flex; justify-content: space-between; align-items: baseline; min-height: 48px; border-bottom: 1px solid var(--rule); font-size: 22px; text-align: left; }
+  .week-list button.on { color: var(--accent); }
+  .week-list small { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: var(--muted); font-size: 12px; }
+
+  .plans { list-style: none; margin: 18px 0 0; padding: 0; }
+  .plans li { display: flex; align-items: center; gap: 8px; min-height: 40px; border-bottom: 1px solid var(--rule); }
+  .plans li.done span { text-decoration: line-through; color: var(--muted); }
+  .plans span { flex: 1; font-size: 18px; }
+  .tick, .x { width: 32px; height: 32px; color: var(--muted); font-family: "Segoe UI", Helvetica, Arial, sans-serif; }
+  .addrow { display: flex; border-bottom: 1px solid var(--rule); }
+  .addrow input { flex: 1; background: transparent; border: 0; min-height: 44px; font-size: 18px; }
+  .addrow input:focus { outline: none; }
+  .addrow button { color: var(--accent); font-family: "Segoe UI", Helvetica, Arial, sans-serif; letter-spacing: 0.12em; font-size: 12px; font-weight: 700; min-width: 44px; }
+
+  .board {
+    position: relative;
+    flex: 1;
+    min-height: 200px;
+    margin-top: 8px;
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, var(--rule) 32px);
+    touch-action: none;
+  }
+  .sticker { position: absolute; width: 52px; height: 52px; display: grid; place-items: center; touch-action: none; }
+  .sticker svg { width: 36px; height: 36px; }
+  .sticker.selected { outline: 1px dashed var(--accent); outline-offset: 2px; }
+  .tray { display: flex; gap: 4px; align-items: center; padding-top: 8px; overflow-x: auto; }
+  .tray button { width: 40px; height: 40px; flex: none; display: grid; place-items: center; }
+  .tray svg { width: 24px; height: 24px; }
+  .lift { margin-left: auto; color: var(--accent); font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; letter-spacing: 0.08em; min-height: 40px; }
+
+  .goals { display: flex; flex-direction: column; margin-top: 12px; }
+  .goals input, .notes textarea {
+    background: transparent; border: 0; border-bottom: 1px solid var(--rule);
+    min-height: 48px; width: 100%; font-size: 20px; padding: 8px 0;
+  }
+  .notes textarea { min-height: 46dvh; resize: none; border: 0; line-height: 32px; background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, var(--rule) 32px); }
+  .notes textarea:focus, .goals input:focus { outline: none; }
+  .romans { display: flex; flex-direction: column; gap: 8px; margin-top: 24px; }
+  .romans button { text-align: left; font-size: 28px; min-height: 48px; }
+  .romans button[aria-pressed="true"] { color: var(--accent); }
+
+  .cover-desk {
+    grid-template-columns: 64px minmax(240px, 460px) 64px;
+    grid-template-rows: auto auto;
+    justify-content: center;
+    align-items: center;
+    gap: 14px 8px;
+  }
+  .cover-desk .themes { grid-column: 1 / -1; justify-content: center; }
+  [data-theme="ink"] .flip { color: var(--page); }
+  .cover-book {
+    width: min(460px, 100%);
+    height: min(680px, calc(100dvh - 150px));
+    background: var(--page);
+    box-shadow: 0 30px 70px rgba(40, 28, 16, 0.35);
+    padding: 36px 36px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+  }
+  .cover-book h1 { font-weight: normal; font-size: clamp(84px, 18vw, 132px); line-height: 0.82; margin: 8px 0; }
+  .markbox { width: 84px; height: 84px; border: 1px solid var(--accent); display: grid; place-items: center; font-size: 42px; }
+  .band { margin: 0 -36px; background: var(--accent); color: var(--accent-ink); padding: 22px 36px; }
+  .open {
+    align-self: flex-start;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    font-weight: 700;
+    min-height: 48px;
+    padding: 0 18px;
+  }
+  .flip {
+    width: 52px; height: 52px;
+    color: rgba(42, 36, 28, 0.72);
+    font-size: 32px;
+    font-family: Georgia, serif;
+  }
+  .themes { display: flex; gap: 10px; }
+  .swatch { width: 36px; height: 36px; border-radius: 50%; border: 2px solid transparent; box-shadow: 0 0 0 1px rgba(0,0,0,.2); }
+  .swatch[aria-pressed="true"] { border-color: var(--page); }
+
+  .slip-wrap { position: fixed; inset: 0; z-index: 5; display: grid; place-items: center; background: rgba(20, 14, 8, 0.28); padding: 24px; }
+  .slip { width: min(420px, 100%); background: var(--page); box-shadow: 0 20px 50px rgba(0,0,0,.25); padding: 28px; }
+  .slip h3 { margin: 0 0 16px; font-weight: normal; font-size: 36px; }
+  .years, .slip-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0 16px; }
+  .year-btn, .filebtn {
+    border-bottom: 1px solid var(--rule);
+    min-height: 44px;
+    padding: 0 8px;
+    font-size: 20px;
+  }
+  .year-btn[aria-pressed="true"] { color: var(--accent); }
+  .filebtn { font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; letter-spacing: 0.1em; }
+
+  @media (max-width: 860px) {
+    .spread { grid-template-columns: 1fr; min-height: 0; }
+    .spread::before { display: none; }
+    .leaf.left, .leaf.right { padding: 22px 20px; }
+    .leaf.right { border-top: 12px solid var(--desk); min-height: 78dvh; }
+    .ribbons { position: static; flex-direction: row; margin-bottom: 10px; overflow-x: auto; }
+    .ribbon { writing-mode: horizontal-tb; transform: none; }
+    .cover-book { width: min(460px, calc(100vw - 28px)); }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const KEY = "folio-daybook-v1";
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WSHORT = ["S","M","T","W","T","F","S"];
+const WLONG = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const THEMES = [
+  { id: "paper", name: "Paper", bg: "#EFE8DC", desk: "#C4B49A" },
+  { id: "ink", name: "Ink", bg: "#1A1E1B", desk: "#0B0D0B" },
+  { id: "tide", name: "Tide", bg: "#F3F7F7", desk: "#9EB4B8" }
+];
+const COVERS = ["index", "mark", "band"];
+const STICKERS = {
+  star: { color: "#C4552A", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2l3.8 8.6L29 12l-6.6 6 1.8 9.2L16 22.8 7.8 27.2 9.6 18 3 12l9.2-1.4z"/></svg>' },
+  heart: { color: "#8E3B2E", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 27S4 18.5 4 11a6 6 0 0 1 11-3 6 6 0 0 1 11 3c0 7.5-12 16-12 16z"/></svg>' },
+  sun: { color: "#C4A15A", svg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><circle cx="16" cy="16" r="5"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M6.5 6.5l3 3M22.5 22.5l3 3M25.5 6.5l-3 3M9.5 22.5l-3 3"/></svg>' },
+  moon: { color: "#3E5C74", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M22 4a12 12 0 1 0 6 22 10 10 0 0 1-6-22z"/></svg>' },
+  flag: { color: "#1C4E5A", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M7 3h2v26H7zM11 5h14l-3 6 3 6H11z"/></svg>' },
+  ring: { color: "#8E3B2E", svg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><circle cx="16" cy="16" r="9"/></svg>' },
+  leaf: { color: "#3E6B45", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><path d="M6 26C6 12 16 4 28 4 28 18 18 28 6 26z"/></svg>' },
+  check: { color: "#3E6B45", svg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 17l6 6L26 8"/></svg>' },
+  arrow: { color: "#C4A15A", svg: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 16h18M16 8l8 8-8 8"/></svg>' },
+  dot: { color: "#C4552A", svg: '<svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="16" r="7"/></svg>' }
+};
+
+const blank = () => ({
+  theme: "paper", cover: "index", year: 2027, view: "cover",
+  cursor: iso(new Date()), note: 0, sheet: false, selected: null,
+  plans: {}, stickers: {}, goals: ["", "", "", "", "", ""], notes: ["", "", "", ""]
+});
+let state = load();
+let drag = null;
+let swipe = null;
+let suppressClick = false;
+
+function load() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    return saved ? { ...blank(), ...saved, sheet: false, selected: null } : blank();
+  } catch (e) { return blank(); }
+}
+function save() {
+  const { sheet, selected, ...rest } = state;
+  try { localStorage.setItem(KEY, JSON.stringify(rest)); } catch (e) {}
+  const theme = THEMES.find((t) => t.id === state.theme);
+  document.querySelector('meta[name="theme-color"]').content = theme.desk;
+}
+function iso(d) {
+  const z = (n) => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate());
+}
+function parse(s) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function shift(s, days) {
+  const d = parse(s);
+  d.setDate(d.getDate() + days);
+  return iso(d);
+}
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function plansFor(day) { return state.plans[day] || []; }
+function stickersFor(day) { return state.stickers[day] || []; }
+function hasMarks(day) { return plansFor(day).length || stickersFor(day).length; }
+function set(patch) { state = { ...state, ...patch }; save(); render(); }
+function escapeHtml(s) { return String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+function shownDay() {
+  if (state.cursor.slice(0, 4) !== String(state.year)) return state.year + "-01-01";
+  return state.cursor;
+}
+function monthCells(year, month) {
+  const first = new Date(year, month, 1);
+  const start = new Date(year, month, 1 - first.getDay());
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+}
+
+function ribbons() {
+  const items = [["year", "Year"], ["month", "Month"], ["week", "Week"], ["goals", "Goals"], ["notes", "Notes"], ["cover", "Cover"]];
+  const tabs = items.map(([id, name]) => {
+    const on = id === "month" ? state.view === "day" || state.view === "month" : state.view === id;
+    return `<button class="ribbon" data-act="goto" data-id="${id}"${on ? ' aria-current="page"' : ""}>${name}</button>`;
+  }).join("");
+  return `<nav class="ribbons">${tabs}<button class="ribbon" data-act="open-sheet">Folio</button></nav>`;
+}
+
+function monthLeaf() {
+  const day = parse(shownDay());
+  const month = day.getMonth();
+  const heads = WSHORT.map((w) => `<span>${w}</span>`).join("");
+  const cells = monthCells(state.year, month).map((d) => {
+    const id = iso(d);
+    const cls = [d.getMonth() !== month ? "out" : "", id === shownDay() ? "on" : "", id === iso(new Date()) ? "today" : ""].filter(Boolean).join(" ");
+    const dot = hasMarks(id) ? `<i class="dot"></i>` : "";
+    return `<button class="daycell ${cls}" data-act="open-day" data-day="${id}">${d.getDate()}${dot}</button>`;
+  }).join("");
+  return `<section class="leaf left"><div class="month-nav"><button data-act="shift-month" data-by="-1" aria-label="Previous month">←</button><h3>${MONTHS[month]}</h3><button data-act="shift-month" data-by="1" aria-label="Next month">→</button></div><div class="weekdays">${heads}</div><div class="days">${cells}</div></section>`;
+}
+
+function weekLeaf() {
+  const cursor = parse(shownDay());
+  const start = new Date(cursor);
+  start.setDate(cursor.getDate() - cursor.getDay());
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const id = iso(d);
+    const n = plansFor(id).filter((p) => !p.done).length;
+    return `<button data-act="open-day" data-day="${id}" class="${id === shownDay() ? "on" : ""}"><span>${WLONG[i].slice(0, 3)} ${d.getDate()}</span><small>${n ? n + " open" : ""}</small></button>`;
+  }).join("");
+  return `<section class="leaf left"><div class="month-nav"><button data-act="shift-week" data-by="-7" aria-label="Previous week">←</button><h3>Week</h3><button data-act="shift-week" data-by="7" aria-label="Next week">→</button></div><div class="week-list">${days}</div></section>`;
+}
+
+function dayLeaf() {
+  const day = shownDay();
+  const d = parse(day);
+  const items = plansFor(day).map((p) => `<li class="${p.done ? "done" : ""}"><button class="tick" data-act="toggle" data-id="${p.id}" aria-label="Mark done">${p.done ? "✓" : "○"}</button><span>${escapeHtml(p.text)}</span><button class="x" data-act="del-plan" data-id="${p.id}" aria-label="Remove">×</button></li>`).join("");
+  const placed = stickersFor(day).map((s) => {
+    const spec = STICKERS[s.type];
+    return `<button class="sticker${state.selected === s.id ? " selected" : ""}" data-sticker="${s.id}" style="left:${s.x}%;top:${s.y}%;color:${spec.color}" aria-label="${s.type}">${spec.svg}</button>`;
+  }).join("");
+  const tray = Object.entries(STICKERS).map(([id, spec]) => `<button data-act="add-sticker" data-id="${id}" aria-label="Add ${id}" style="color:${spec.color}">${spec.svg}</button>`).join("");
+  return `<section class="leaf right"><div class="turn"><button data-act="shift-day" data-by="-1" aria-label="Previous day">←</button><div><p class="kicker">${WLONG[d.getDay()].toUpperCase()}</p><h2>${MONTHS[d.getMonth()]} ${d.getDate()}</h2></div><button data-act="shift-day" data-by="1" aria-label="Next day">→</button></div><ul class="plans">${items}</ul><form class="addrow" data-act="add-plan"><input name="text" type="text" placeholder="A line for this day" autocomplete="off" aria-label="Add a plan"><button type="submit">ADD</button></form><div class="board" data-board>${placed}</div><div class="tray">${tray}${state.selected ? `<button class="lift" data-act="del-sticker">Lift off</button>` : ""}</div></section>`;
+}
+
+function yearSpread() {
+  const half = (from, to) => MONTHS.slice(from, to).map((name, i) => {
+    const month = from + i;
+    const count = monthCells(state.year, month).filter((d) => d.getMonth() === month && hasMarks(iso(d))).length;
+    return `<button data-act="month" data-month="${month}">${name}<em>${count ? count : ""}</em></button>`;
+  }).join("");
+  return `<section class="leaf left"><p class="kicker">FOLIO</p><h2>${state.year}</h2><div class="months">${half(0, 6)}</div></section><section class="leaf right"><p class="kicker">THE OTHER HALF</p><h2>&nbsp;</h2><div class="months">${half(6, 12)}</div></section>`;
+}
+
+function goalsSpread() {
+  const rows = state.goals.map((g, i) => `<input type="text" data-field="goal" data-i="${i}" value="${escapeAttr(g)}" placeholder="Intention ${i + 1}" aria-label="Intention ${i + 1}">`).join("");
+  return `<section class="leaf left"><p class="kicker">FOR THE YEAR</p><h2>${state.year}</h2><p class="quiet">Six lines. They stay on this iPad.</p></section><section class="leaf right goals"><div class="goals">${rows}</div></section>`;
+}
+
+function notesSpread() {
+  const romans = ["I", "II", "III", "IV"];
+  const tabs = romans.map((r, i) => `<button data-act="note" data-i="${i}" aria-pressed="${state.note === i}">${r}</button>`).join("");
+  return `<section class="leaf left"><p class="kicker">NOTES</p><h2>Loose pages</h2><div class="romans">${tabs}</div></section><section class="leaf right notes"><textarea data-field="note" data-i="${state.note}" aria-label="Note ${state.note + 1}">${escapeHtml(state.notes[state.note] || "")}</textarea></section>`;
+}
+
+function slip() {
+  if (!state.sheet) return "";
+  const themes = THEMES.map((t) => `<button class="swatch" data-act="theme" data-id="${t.id}" aria-pressed="${state.theme === t.id}" aria-label="${t.name}" style="background:${t.bg}"></button>`).join("");
+  const years = [2026, 2027, 2028].map((y) => `<button class="year-btn" data-act="year" data-year="${y}" aria-pressed="${state.year === y}">${y}</button>`).join("");
+  return `<div class="slip-wrap" data-act="close-sheet"><div class="slip" data-stop><p class="kicker">THE BOOK</p><h3>Folio</h3><p class="kicker">THEME</p><div class="themes">${themes}</div><p class="kicker" style="margin-top:18px">YEAR</p><div class="years">${years}</div><div class="slip-row"><button class="filebtn" data-act="export">EXPORT</button><label class="filebtn">IMPORT<input type="file" accept="application/json" data-act="import" hidden></label><button class="filebtn" data-act="close-sheet">CLOSE</button></div></div></div>`;
+}
+
+function coverArt() {
+  const y = state.year;
+  if (state.cover === "mark") return `<div class="markbox">F</div><div><p class="kicker">FOLIO</p><h1>${y}</h1></div>`;
+  if (state.cover === "band") return `<p class="kicker">A YEAR IN DAYS</p><div class="band"><h1>${y}</h1></div><p class="kicker">FOLIO</p>`;
+  return `<p class="kicker">FOLIO</p><h1>${y}</h1><p class="kicker">ONE PAGE FOR EVERY DAY</p>`;
+}
+
+function coverPage() {
+  const themes = THEMES.map((t) => `<button class="swatch" data-act="theme" data-id="${t.id}" aria-pressed="${state.theme === t.id}" aria-label="${t.name}" style="background:${t.bg}"></button>`).join("");
+  return `<div class="desk cover-desk"><button class="flip" data-act="flip" data-by="-1" aria-label="Previous cover">‹</button><article class="cover-book" data-swipe>${coverArt()}<button class="open" data-act="open">OPEN</button></article><button class="flip" data-act="flip" data-by="1" aria-label="Next cover">›</button><div class="themes">${themes}</div></div>`;
+}
+
+function book() {
+  let leaves = daySpread();
+  if (state.view === "year") leaves = yearSpread();
+  else if (state.view === "week") leaves = weekLeaf() + dayLeaf();
+  else if (state.view === "goals") leaves = goalsSpread();
+  else if (state.view === "notes") leaves = notesSpread();
+  return `<div class="desk"><div class="book">${ribbons()}<div class="spread">${leaves}</div></div></div>${slip()}`;
+}
+function daySpread() { return monthLeaf() + dayLeaf(); }
+
+function render() {
+  document.documentElement.dataset.theme = state.theme;
+  const theme = THEMES.find((t) => t.id === state.theme);
+  document.querySelector('meta[name="theme-color"]').content = theme.desk;
+  document.getElementById("app").innerHTML = state.view === "cover" ? coverPage() : book();
+}
+
+document.body.addEventListener("click", (e) => {
+  if (suppressClick) { suppressClick = false; return; }
+  const t = e.target.closest("[data-act]");
+  if (!t) {
+    if (e.target.closest("[data-board]") && state.selected) set({ selected: null });
+    return;
+  }
+  if (t.hasAttribute("data-stop")) return;
+  const act = t.dataset.act;
+  if (act === "theme") set({ theme: t.dataset.id });
+  else if (act === "flip") {
+    const i = COVERS.indexOf(state.cover);
+    set({ cover: COVERS[(i + Number(t.dataset.by) + COVERS.length) % COVERS.length] });
+  } else if (act === "open") {
+    const today = iso(new Date());
+    set({ view: "day", cursor: today.startsWith(String(state.year)) ? today : state.year + "-01-01", selected: null });
+  } else if (act === "goto") {
+    const view = t.dataset.id;
+    const patch = { view, sheet: false, selected: null };
+    if (view === "month") patch.view = "day";
+    if (view === "cover") patch.view = "cover";
+    set(patch);
+  } else if (act === "open-sheet") set({ sheet: true });
+  else if (act === "close-sheet") { if (e.target === t) set({ sheet: false }); }
+  else if (act === "year") set({ year: Number(t.dataset.year), cursor: t.dataset.year + "-01-01" });
+  else if (act === "month") set({ view: "day", cursor: state.year + "-" + String(Number(t.dataset.month) + 1).padStart(2, "0") + "-01", selected: null });
+  else if (act === "open-day") {
+    const patch = { cursor: t.dataset.day, year: Number(t.dataset.day.slice(0, 4)), selected: null };
+    if (state.view !== "week") patch.view = "day";
+    set(patch);
+  } else if (act === "shift-month") {
+    const d = parse(shownDay());
+    d.setMonth(d.getMonth() + Number(t.dataset.by));
+    set({ cursor: iso(d), year: d.getFullYear(), view: state.view === "year" ? "day" : state.view });
+  } else if (act === "shift-week" || act === "shift-day") {
+    const next = shift(shownDay(), Number(t.dataset.by));
+    set({ cursor: next, year: Number(next.slice(0, 4)) });
+  } else if (act === "toggle") {
+    state.plans = { ...state.plans, [shownDay()]: plansFor(shownDay()).map((p) => p.id === t.dataset.id ? { ...p, done: !p.done } : p) };
+    set({});
+  } else if (act === "del-plan") {
+    state.plans = { ...state.plans, [shownDay()]: plansFor(shownDay()).filter((p) => p.id !== t.dataset.id) };
+    set({});
+  } else if (act === "add-sticker") {
+    const sticker = { id: uid(), type: t.dataset.id, x: 12 + Math.random() * 50, y: 8 + Math.random() * 40 };
+    const day = shownDay();
+    state.stickers = { ...state.stickers, [day]: stickersFor(day).concat(sticker) };
+    state.cursor = day;
+    set({ selected: sticker.id });
+  } else if (act === "del-sticker") {
+    const day = shownDay();
+    state.stickers = { ...state.stickers, [day]: stickersFor(day).filter((s) => s.id !== state.selected) };
+    set({ selected: null });
+  } else if (act === "note") set({ note: Number(t.dataset.i) });
+  else if (act === "export") {
+    const blob = new Blob([JSON.stringify({ ...state, sheet: false, selected: null }, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "daybook-backup.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+});
+
+document.body.addEventListener("submit", (e) => {
+  if (!e.target.matches("[data-act='add-plan']")) return;
+  e.preventDefault();
+  const text = new FormData(e.target).get("text").toString().trim();
+  if (!text) return;
+  const day = shownDay();
+  state.plans = { ...state.plans, [day]: plansFor(day).concat({ id: uid(), text, done: false }) };
+  state.cursor = day;
+  set({});
+});
+
+document.body.addEventListener("input", (e) => {
+  const field = e.target.dataset.field;
+  if (field === "goal") { state.goals[Number(e.target.dataset.i)] = e.target.value; save(); }
+  if (field === "note") { state.notes[Number(e.target.dataset.i)] = e.target.value; save(); }
+});
+
+document.body.addEventListener("change", (e) => {
+  if (e.target.dataset.act !== "import") return;
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      state = { ...blank(), ...JSON.parse(reader.result), sheet: false, selected: null };
+      save();
+      render();
+    } catch (err) {}
+  };
+  reader.readAsText(file);
+});
+
+document.body.addEventListener("pointerdown", (e) => {
+  const sticker = e.target.closest("[data-sticker]");
+  if (sticker) {
+    const board = sticker.parentElement.getBoundingClientRect();
+    const rect = sticker.getBoundingClientRect();
+    drag = { id: sticker.dataset.sticker, ox: e.clientX - rect.left, oy: e.clientY - rect.top, board, moved: false };
+    sticker.setPointerCapture(e.pointerId);
+    return;
+  }
+  if (e.target.closest("[data-swipe]")) swipe = { x: e.clientX, y: e.clientY };
+});
+
+document.body.addEventListener("pointermove", (e) => {
+  if (!drag) return;
+  const x = ((e.clientX - drag.board.left - drag.ox) / drag.board.width) * 100;
+  const y = ((e.clientY - drag.board.top - drag.oy) / drag.board.height) * 100;
+  drag.x = Math.max(0, Math.min(78, x));
+  drag.y = Math.max(0, Math.min(72, y));
+  drag.moved = true;
+  const el = document.querySelector(`[data-sticker="${drag.id}"]`);
+  if (el) { el.style.left = drag.x + "%"; el.style.top = drag.y + "%"; }
+});
+
+document.body.addEventListener("pointerup", (e) => {
+  if (drag) {
+    if (drag.moved) {
+      suppressClick = true;
+      const day = shownDay();
+      state.stickers = { ...state.stickers, [day]: stickersFor(day).map((s) => s.id === drag.id ? { ...s, x: drag.x, y: drag.y } : s) };
+      state.selected = drag.id;
+      save();
+    } else set({ selected: drag.id });
+    drag = null;
+  }
+  if (swipe && state.view === "cover") {
+    const dx = e.clientX - swipe.x;
+    if (Math.abs(dx) > 48) {
+      const i = COVERS.indexOf(state.cover);
+      set({ cover: COVERS[(i + (dx < 0 ? 1 : -1) + COVERS.length) % COVERS.length] });
+    }
+  }
+  swipe = null;
+});
+
+render();
+</script>
+</body>
+</html>

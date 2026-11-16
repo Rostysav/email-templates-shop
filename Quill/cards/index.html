@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quill — Packing cards</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #E9EBEF; color: #14161A; font-family: Georgia, "Times New Roman", serif; }
+    main { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
+    .mark {
+      width: 56px; height: 56px; border: 1px solid #14161A; background: #FFFFFF;
+      font-size: 28px; line-height: 54px; text-align: center;
+    }
+    .brand { margin-top: 14px; font-size: 14px; letter-spacing: 0.28em; }
+    h1 { font-weight: normal; font-size: 42px; line-height: 1.15; margin: 16px 0 8px; }
+    p { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #5A6169; font-size: 16px; line-height: 1.6; max-width: 62ch; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+    .card { display: block; text-decoration: none; background: #FFFFFF; border: 1px solid #D8DCE1; padding: 22px 22px 20px; }
+    .card:hover { border-color: #9B2F1E; }
+    .kicker { display: block; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.18em; color: #9B2F1E; font-weight: 700; }
+    .name { display: block; margin-top: 8px; color: #14161A; font-size: 18px; line-height: 1.4; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">Q</div>
+    <div class="brand">QUILL</div>
+    <h1>Quill packing cards</h1>
+    <p>Three cards for the box: a welcome note, a thank-you card, and a return insert. Print at 5 × 7 inches. This page is only a local preview.</p>
+    <div class="grid">
+      <a class="card" href="welcome-card.html">
+        <span class="kicker">Welcome card</span>
+        <span class="name">For the desk. A short welcome in the parcel.</span>
+      </a>
+      <a class="card" href="thank-you.html">
+        <span class="kicker">Thank-you card</span>
+        <span class="name">Packed on Greene Street.</span>
+      </a>
+      <a class="card" href="return-insert.html">
+        <span class="kicker">Return insert</span>
+        <span class="name">Fourteen days, and where to send it.</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

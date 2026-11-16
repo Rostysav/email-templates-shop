@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quill — Welcome card</title>
+  <script>if (location.search.indexOf("shot=1") !== -1) document.documentElement.classList.add("shot");</script>
+  <style>
+    html.shot .print { display: none !important; }
+    html.shot body { padding: 0 !important; background: transparent !important; }
+    html.shot .sheet { margin: 0 !important; box-shadow: none !important; }
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #14161A; }
+    .bar { height: 4px; background: #9B2F1E; }
+    .mark {
+      width: 42px; height: 42px; margin: 0 auto; border: 1px solid #14161A;
+      font-family: Georgia, "Times New Roman", serif; font-size: 22px; line-height: 40px; text-align: center;
+    }
+    .kicker {
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.18em;
+      text-transform: uppercase; color: #9B2F1E; font-weight: 650;
+    }
+    h1 {
+      font-family: Georgia, "Times New Roman", serif; font-weight: normal;
+      font-size: 34px; line-height: 1.15; margin: 10px 0 0;
+    }
+    .letter {
+      font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.45;
+      margin: 14px auto 0; max-width: 14em; color: #5A6169;
+    }
+    .word {
+      font-family: Georgia, "Times New Roman", serif; font-size: 13px; letter-spacing: 0.28em;
+      display: inline-block; padding-left: 0.28em;
+    }
+    .mail { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #5A6169; font-size: 13px; margin-top: 8px; }
+    .sheet { text-align: center; display: flex; flex-direction: column; }
+    .body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .print {
+      position: fixed; top: 16px; right: 16px; border: 1px solid #14161A; background: #FFFFFF;
+      color: #14161A; font: 12px "Segoe UI", Helvetica, Arial, sans-serif; letter-spacing: 0.14em;
+      text-transform: uppercase; padding: 10px 14px; cursor: pointer;
+    }
+    @media screen {
+      body { background: #E9EBEF; padding: 36px 16px 64px; }
+      .sheet {
+        width: 5in; height: 7in; margin: 0 auto; padding: 0; overflow: hidden;
+        background: #FFFFFF; box-shadow: 0 18px 50px rgba(20, 22, 26, 0.12);
+      }
+      .inner { flex: 1; display: flex; flex-direction: column; padding: 0.48in; }
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .sheet { margin: 0; padding: 0; box-shadow: none; background: #fff; min-height: 6in; }
+      .inner { padding: 0; min-height: 6in; display: flex; flex-direction: column; }
+      .print { display: none; }
+    }
+    @page { size: 5in 7in; margin: 0.48in; }
+  </style>
+</head>
+<body>
+  <button class="print" onclick="window.print()">Print</button>
+  <div class="sheet">
+    <div class="bar"></div>
+    <div class="inner">
+      <div class="mark">Q</div>
+      <div class="body">
+        <div class="kicker">Welcome</div>
+        <h1>For the desk.</h1>
+        <p class="letter">A short list of things made to stay on the table. Thank you for the order.</p>
+      </div>
+      <div>
+        <div class="word">QUILL</div>
+        <div class="mail">quill.example</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

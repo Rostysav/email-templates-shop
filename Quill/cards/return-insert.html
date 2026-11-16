@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quill — Return insert</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: #14161A; font-family: "Segoe UI", Helvetica, Arial, sans-serif; }
+    .bar { height: 4px; background: #9B2F1E; }
+    .mark {
+      width: 42px; height: 42px; border: 1px solid #14161A;
+      font-family: Georgia, "Times New Roman", serif; font-size: 22px; line-height: 40px; text-align: center;
+    }
+    .kicker {
+      margin-top: 28px; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+      color: #9B2F1E; font-weight: 650;
+    }
+    h1 {
+      font-family: Georgia, "Times New Roman", serif; font-weight: normal;
+      font-size: 34px; line-height: 1.15; margin: 8px 0 0;
+    }
+    .lead { font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.4; margin: 14px 0 0; max-width: 16em; }
+    .addr { font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.4; margin-top: 8px; }
+    .foot { margin-top: 28px; color: #5A6169; font-size: 14px; line-height: 1.5; max-width: 22em; }
+    .print {
+      position: fixed; top: 16px; right: 16px; border: 1px solid #14161A; background: #FFFFFF;
+      color: #14161A; font: 12px "Segoe UI", Helvetica, Arial, sans-serif; letter-spacing: 0.14em;
+      text-transform: uppercase; padding: 10px 14px; cursor: pointer;
+    }
+    @media screen {
+      body { background: #E9EBEF; padding: 36px 16px 64px; }
+      .sheet {
+        width: 5in; height: 7in; margin: 0 auto; padding: 0; overflow: hidden;
+        background: #FFFFFF; box-shadow: 0 18px 50px rgba(20, 22, 26, 0.12);
+      }
+      .inner { padding: 0.48in; }
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .sheet { width: auto; height: auto; margin: 0; padding: 0; box-shadow: none; background: #fff; }
+      .inner { padding: 0; }
+      .print { display: none; }
+    }
+    @page { size: 5in 7in; margin: 0.48in; }
+  </style>
+</head>
+<body>
+  <button class="print" onclick="window.print()">Print</button>
+  <div class="sheet">
+    <div class="bar"></div>
+    <div class="inner">
+      <div class="mark">Q</div>
+      <div class="kicker">A return</div>
+      <h1>Fourteen days.</h1>
+      <p class="lead">Unused, and back in its box.</p>
+      <div class="kicker">Send it here</div>
+      <div class="addr">
+        Quill<br>
+        110 Greene Street<br>
+        New York, NY 10012
+      </div>
+      <p class="foot">Put the order number in the box. Write to hello@quill.example before you post it, so we know it is coming.</p>
+    </div>
+  </div>
+</body>
+</html>

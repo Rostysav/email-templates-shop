@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ash — Packing set</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #E6DECF; color: #1A1814; font-family: Georgia, "Times New Roman", serif; }
+    main { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
+    .mark {
+      width: 56px; height: 56px; border: 1px solid #1A1814; background: #F7F3EA;
+      font-size: 28px; line-height: 54px; text-align: center;
+    }
+    h1 { font-weight: normal; font-size: 42px; line-height: 1.15; margin: 18px 0 8px; }
+    p { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #6E675C; font-size: 16px; line-height: 1.6; max-width: 62ch; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+    .card { display: block; text-decoration: none; background: #F7F3EA; border: 1px solid #D9D1C3; padding: 22px 22px 20px; }
+    .card:hover { border-color: #3E4A3A; }
+    .kicker { display: block; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.18em; color: #3E4A3A; font-weight: 700; }
+    .name { display: block; margin-top: 8px; color: #1A1814; font-size: 18px; line-height: 1.4; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">A</div>
+    <h1>Ash packing set</h1>
+    <p>A packing slip for the Shopify order, a thank-you card, and a return note. The slip that prints with a real order is <code>packing-slip.liquid</code>. This page is only a local preview. Do not put it in the box.</p>
+    <div class="grid">
+      <a class="card" href="packing-slip.html">
+        <span class="kicker">Packing slip</span>
+        <span class="name">Order #1044, packed for Helen Cho.</span>
+      </a>
+      <a class="card" href="thank-you.html">
+        <span class="kicker">Thank-you card</span>
+        <span class="name">A short note, five by seven inches.</span>
+      </a>
+      <a class="card" href="return-insert.html">
+        <span class="kicker">Return insert</span>
+        <span class="name">Fourteen days, and where to send it.</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>

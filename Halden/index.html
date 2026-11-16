@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Halden — Shopify email templates</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#0E0E0E; color:#F3F0E8; font-family: Georgia, "Times New Roman", serif; }
+    main { max-width: 880px; margin: 0 auto; padding: 48px 24px 80px; }
+    .mark { display:block; }
+    h1 { font-weight: normal; font-size: 42px; line-height: 1.15; margin: 18px 0 8px; letter-spacing: 0.01em; }
+    p { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color:#A8A29A; font-size: 16px; line-height: 1.6; max-width: 62ch; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
+    .card { display:block; text-decoration:none; background:#161616; border:1px solid #323232; padding: 22px 22px 20px; }
+    .card:hover { border-color:#C6A36A; }
+    .kicker { display:block; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.18em; color:#C6A36A; font-weight: 700; }
+    .name { display:block; margin-top: 8px; color:#F3F0E8; font-size: 18px; line-height: 1.4; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <svg class="mark" xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Halden">
+      <rect x="0.5" y="0.5" width="55" height="55" fill="none" stroke="#C6A36A"/>
+      <text x="28" y="37" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="28" fill="#F3F0E8">H</text>
+    </svg>
+    <h1>Halden email templates</h1>
+    <p>Six Shopify letters in one dark system: welcome, abandoned cart, order confirmation, shipping, review, and Black Friday. The mark in each letter is CSS. Photo areas are CSS blocks plus a small PNG from placehold.co. Every link inside a letter is #.</p>
+    <div class="grid">
+      <a class="card" href="welcome.html">
+      <span class="kicker">Welcome</span>
+      <span class="name">Ten percent off your first order. Your code is inside.</span>
+    </a>
+<a class="card" href="abandoned-cart.html">
+      <span class="kicker">Abandoned cart</span>
+      <span class="name">The overcoat and the tote are still set aside for you.</span>
+    </a>
+<a class="card" href="order-confirmation.html">
+      <span class="kicker">Order confirmation</span>
+      <span class="name">Order 1842 is confirmed. We are preparing it now.</span>
+    </a>
+<a class="card" href="shipping-update.html">
+      <span class="kicker">Shipping update</span>
+      <span class="name">Order 1842 is on the way. Tracking is inside.</span>
+    </a>
+<a class="card" href="review-request.html">
+      <span class="kicker">Review request</span>
+      <span class="name">How is the wool overcoat treating you?</span>
+    </a>
+<a class="card" href="black-friday.html">
+      <span class="kicker">Black Friday</span>
+      <span class="name">Four days at Halden. Up to 30% off the pieces already in the shop.</span>
+    </a>
+    </div>
+  </main>
+</body>
+</html>
