@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brand Ops Pack â Preview</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #E9EBEF; color: #14161A; font-family: Georgia, "Times New Roman", serif; }
+    main { max-width: 920px; margin: 0 auto; padding: 48px 24px 80px; }
+    .mark { width: 56px; height: 56px; border: 1px solid #14161A; background: #FFFFFF; font-size: 28px; line-height: 54px; text-align: center; }
+    .brand { margin-top: 14px; font-size: 14px; letter-spacing: 0.28em; }
+    h1 { font-weight: normal; font-size: 42px; line-height: 1.15; margin: 16px 0 8px; }
+    h2 { font-weight: normal; font-size: 24px; margin: 40px 0 8px; }
+    p { font-family: "Segoe UI", Helvetica, Arial, sans-serif; color: #5A6169; font-size: 16px; line-height: 1.6; max-width: 62ch; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .card { display: block; text-decoration: none; background: #FFFFFF; border: 1px solid #D8DCE1; padding: 22px 22px 20px; }
+    .card:hover { border-color: #9B2F1E; }
+    .kicker { display: block; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; letter-spacing: 0.18em; color: #9B2F1E; font-weight: 700; }
+    .name { display: block; margin-top: 8px; color: #14161A; font-size: 18px; line-height: 1.4; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 34px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="mark">Q</div>
+    <div class="brand">BRAND OPS PACK</div>
+    <h1>Shopify emails, packing, and invoice</h1>
+    <p>One sample brand (Quill) across the order path: six customer emails, a Shopify packing slip, print inserts, and an invoice. Open any file below for a local preview. Replace names, prices, and addresses before a live send.</p>
+
+    <h2>Emails</h2>
+    <p>Table layout and inline CSS for Gmail, Apple Mail, Outlook, Yahoo, and mobile.</p>
+    <div class="grid">
+      <a class="card" href="emails/welcome.html"><span class="kicker">Welcome</span><span class="name">Ten percent off your first order.</span></a>
+      <a class="card" href="emails/abandoned-cart.html"><span class="kicker">Abandoned cart</span><span class="name">The lamp and the ink set are still set aside.</span></a>
+      <a class="card" href="emails/order-confirmation.html"><span class="kicker">Order confirmation</span><span class="name">Order 5521 is confirmed.</span></a>
+      <a class="card" href="emails/shipping-update.html"><span class="kicker">Shipping update</span><span class="name">Tracking is inside.</span></a>
+      <a class="card" href="emails/delivered.html"><span class="kicker">Delivered</span><span class="name">It is at the door.</span></a>
+      <a class="card" href="emails/review-request.html"><span class="kicker">Review request</span><span class="name">How does the lamp feel?</span></a>
+    </div>
+
+    <h2>Packing</h2>
+    <p>Use <code>packing/packing-slip.liquid</code> in Shopify. The HTML files are print previews.</p>
+    <div class="grid">
+      <a class="card" href="packing/packing-slip.html"><span class="kicker">Packing slip</span><span class="name">Order #5521 for Owen Hart.</span></a>
+      <a class="card" href="packing/thank-you.html"><span class="kicker">Thank-you card</span><span class="name">Five by seven inches.</span></a>
+      <a class="card" href="packing/return-insert.html"><span class="kicker">Return insert</span><span class="name">Fourteen days, and where to send it.</span></a>
+    </div>
+
+    <h2>Invoice</h2>
+    <div class="grid">
+      <a class="card" href="invoice/invoice.html"><span class="kicker">Invoice</span><span class="name">INV-5521 Â· lamp and ink set.</span></a>
+    </div>
+  </main>
+</body>
+</html>
+
+ 
